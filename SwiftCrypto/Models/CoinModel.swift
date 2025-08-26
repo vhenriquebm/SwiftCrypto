@@ -33,7 +33,7 @@ struct CoinModel: Identifiable, Decodable {
     let lastUpdated: String?
     let sparklineIn7D: SparklineIn7D?
     let priceChangePercentage24HInCurrency: Double?
-    let currentHoldings: Double
+    let currentHoldings: Double?
     
     enum CodingKeys: String, CodingKey {
         case id, symbol, name, image
@@ -97,7 +97,7 @@ struct CoinModel: Identifiable, Decodable {
     }
     
     var currentHoldingsValue: Double {
-        return currentHoldings * currentPrice
+        return currentHoldings ?? 0.0 * currentPrice
     }
     
     var rank: Int {
