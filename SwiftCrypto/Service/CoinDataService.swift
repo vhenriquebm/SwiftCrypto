@@ -36,18 +36,10 @@ final class CoinDataService: ObservableObject {
         
         coinSubscription = NetworkingManager.download(url: url)
             .decode(type: [CoinModel].self, decoder: JSONDecoder())
-            .receive(on: DispatchQueue.main)
-            .sink(
-                receiveCompletion: { completion in
-                    if case .failure(let error) = completion {
-                        print("Error:", error)
-                    }
-                },
-                receiveValue: { [weak self] returnedCoins in
-                    self?.coins = returnedCoins
-                    self?.coinSubscription?.cancel()
-                }
-            )
+            .sink(receiveCompletion: NetworkingManager.handleCompletion, receiveValue: { [ weak self ] returnedCoins in
+                self?.coins = returnedCoins
+                self?.coinSubscription?.cancel()
+            })
     }
 }
 
