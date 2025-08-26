@@ -16,16 +16,11 @@
 import Foundation
 import Combine
 
-enum ApiError: Error {
-    case invalidURL
-    case decodingError
-    case networkingError(Error)
-}
-
 final class CoinDataService: ObservableObject {
     
     @Published var coins: [CoinModel] = []
     private var cancellables = Set<AnyCancellable>()
+    var coinSubscription: AnyCancellable?
     
     init() {
         getCoins()
@@ -37,19 +32,9 @@ final class CoinDataService: ObservableObject {
         "?vs_currency=usd&order=market_cap_desc&per_page=250&page=1" +
         "&sparkline=true&price_change_percentage=24h"
         
-        guard let url = URL(string: urlString) else {
-            print(ApiError.invalidURL)
-            return
-        }
+        guard let url = URL(string: urlString) else { return }
         
-        URLSession.shared.dataTaskPublisher(for: url)
-            .tryMap { output -> Data in
-                guard let response = output.response as? HTTPURLResponse,
-                      (200..<300).contains(response.statusCode) else {
-                    throw URLError(.badServerResponse)
-                }
-                return output.data
-            }
+        coinSubscription = NetworkingManager.download(url: url)
             .decode(type: [CoinModel].self, decoder: JSONDecoder())
             .receive(on: DispatchQueue.main)
             .sink(
@@ -60,9 +45,9 @@ final class CoinDataService: ObservableObject {
                 },
                 receiveValue: { [weak self] returnedCoins in
                     self?.coins = returnedCoins
+                    self?.coinSubscription?.cancel()
                 }
             )
-            .store(in: &cancellables)
     }
 }
 
