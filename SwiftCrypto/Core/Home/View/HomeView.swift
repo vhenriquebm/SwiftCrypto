@@ -23,6 +23,9 @@ struct HomeView: View {
                 
                 homeHeader
                 
+                
+                SearchBarView(searchText: $viewModel.searchText)
+                
                 portfolioTitles
                 
                 if !showPortfolio {
