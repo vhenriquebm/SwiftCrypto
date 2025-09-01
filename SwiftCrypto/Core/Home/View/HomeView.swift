@@ -12,6 +12,9 @@ struct HomeView: View {
     @EnvironmentObject private var viewModel: HomeViewModel
     @State private var showPortfolio: Bool = false
     @State private var showPortfolioView: Bool = false
+    @State private var selectedCoin: CoinModel? = nil
+    @State private var selectedCoinIndex: Int? = nil
+    @State private var showDetailView: Bool = false
     
     var body: some View {
         
@@ -23,7 +26,6 @@ struct HomeView: View {
                     PortfolioView()
                         .environmentObject(viewModel)
                 }
-            
             
             VStack {
                 
@@ -45,6 +47,16 @@ struct HomeView: View {
                 Spacer(minLength: 0)
             }
         }
+        .background(
+            
+            NavigationLink(
+                destination: DetailLoadingView(coin: $selectedCoin),
+                isActive: $showDetailView
+            ) {
+                EmptyView()
+            }
+            
+        )
     }
 }
 
@@ -94,7 +106,7 @@ extension HomeView {
     }
     
     var portfolioTitles: some View {
-                
+        
         HStack {
             
             HStack(spacing: 4) {
@@ -109,7 +121,7 @@ extension HomeView {
                     viewModel.sortOption = viewModel.sortOption == .rank ? .rankReversed : .rank
                 }
             }
-
+            
             Spacer()
             if showPortfolio {
                 HStack(spacing: 4) {
@@ -117,8 +129,8 @@ extension HomeView {
                     Image(systemName: "chevron.down")
                         .opacity(viewModel.sortOption == .holdings || viewModel.sortOption == .holdingReversed ? 1.0 : 0)
                         .rotationEffect(Angle(degrees: viewModel.sortOption == .holdings ? 0 : 180))
-
-
+                    
+                    
                 }
                 .onTapGesture {
                     withAnimation(.default) {
@@ -132,8 +144,8 @@ extension HomeView {
                 Image(systemName: "chevron.down")
                     .opacity(viewModel.sortOption == .price || viewModel.sortOption == .priceReversed ? 1.0 : 0)
                     .rotationEffect(Angle(degrees: viewModel.sortOption == .price ? 0 : 180))
-
-
+                
+                
             }
             .onTapGesture {
                 withAnimation(.default) {
@@ -142,7 +154,7 @@ extension HomeView {
             }
             
             
-                .frame(width: UIScreen.main.bounds.width / 3.5, alignment: .trailing)
+            .frame(width: UIScreen.main.bounds.width / 3.5, alignment: .trailing)
             
             Button {
                 withAnimation(.linear(duration: 2.0)) {
@@ -152,7 +164,7 @@ extension HomeView {
                 Image(systemName: "goforward")
             }
             .rotationEffect(Angle(degrees: viewModel.isLoading ? 360 : 0), anchor: .center)
-
+            
         }
         .font(.caption)
         .foregroundStyle(Color.theme.secondaryText)
@@ -164,6 +176,9 @@ extension HomeView {
             ForEach(viewModel.allCoins) { coin in
                 CoinRowView(coin: coin, showHoldingsColumn: false)
                     .listRowInsets(.init(top: 10, leading: 0, bottom: 10, trailing: 10))
+                    .onTapGesture {
+                        segue(coin: coin)
+                    }
             }
         }
         .listStyle(.plain)
@@ -176,10 +191,17 @@ extension HomeView {
             ForEach(viewModel.portfolioCoins) { coin in
                 CoinRowView(coin: coin, showHoldingsColumn: true)
                     .listRowInsets(.init(top: 10, leading: 0, bottom: 10, trailing: 10))
+                    .onTapGesture {
+                        segue(coin: coin)
+                    }
             }
         }
         .listStyle(.plain)
         .transition(.move(edge: .trailing))
-        
+    }
+    
+    private func segue(coin: CoinModel) {
+        self.selectedCoin = coin
+        self.showDetailView.toggle()
     }
 }
