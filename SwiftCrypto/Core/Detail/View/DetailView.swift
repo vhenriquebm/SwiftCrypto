@@ -22,6 +22,11 @@ struct DetailLoadingView: View {
 struct DetailView: View {
     
     @StateObject var viewModel: DetailViewModel
+    private let columns: [GridItem] = [
+        GridItem(.flexible()),
+        GridItem(.flexible())
+    ]
+    private let spacing: CGFloat = 30
     
     init(coin: CoinModel) {
         _viewModel = StateObject(wrappedValue: DetailViewModel(coin: coin))
@@ -29,10 +34,75 @@ struct DetailView: View {
     
     
     var body: some View {
-        Text("Hello")
+        ScrollView {
+            VStack(spacing: 20) {
+                Text("")
+                    .frame(height: 150)
+                
+                overviewTitle
+                
+                Divider()
+                
+                overviewGrid
+                
+                aditionalTitle
+                
+                Divider()
+
+                additionalGrid
+            }
+            .padding()
+        }
+        .navigationTitle(viewModel.coin.name)
     }
 }
 
 #Preview {
-    DetailView(coin: DeveloperPreview.instance.coin)
+    NavigationStack {
+        DetailView(coin: DeveloperPreview.instance.coin)
+    }
+}
+
+
+extension DetailView {
+    
+    var overviewTitle: some View {
+        Text("Overview")
+            .font(.title)
+            .bold()
+            .foregroundStyle(Color.theme.accent)
+            .frame(maxWidth: .infinity, alignment: .leading)
+    }
+    
+    var aditionalTitle: some View {
+        Text("Overview")
+            .font(.title)
+            .bold()
+            .foregroundStyle(Color.theme.accent)
+            .frame(maxWidth: .infinity, alignment: .leading)
+    }
+    
+    var overviewGrid: some View {
+        LazyVGrid(
+            columns: columns,
+            alignment: .leading,
+            spacing: spacing) {
+                
+                ForEach(viewModel.overviewStatistics) { statistic in
+                    StatisticView(statistic: statistic)
+                }
+            }
+    }
+    
+    var additionalGrid: some View {
+        LazyVGrid(
+            columns: columns,
+            alignment: .leading,
+            spacing: spacing) {
+                
+                ForEach(viewModel.overviewStatistics) { statistic in
+                    StatisticView(statistic: statistic)
+                }
+            }
+    }
 }
