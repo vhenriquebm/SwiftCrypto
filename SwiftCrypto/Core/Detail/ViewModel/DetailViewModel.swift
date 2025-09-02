@@ -9,12 +9,12 @@ import Foundation
 import Combine
 
 class DetailViewModel: ObservableObject {
-    private let coinDetailService: CoinDetailService
-    private var cancellabes = Set<AnyCancellable>()
-    
     @Published var coin: CoinModel
     @Published var overviewStatistics: [StatisticModel] = []
     @Published var additionalStatistics: [StatisticModel] = []
+    
+    private let coinDetailService: CoinDetailService
+    private var cancellabes = Set<AnyCancellable>()
     
     init(coin: CoinModel) {
         self.coinDetailService = CoinDetailService(coin: coin)

@@ -54,6 +54,11 @@ struct DetailView: View {
             .padding()
         }
         .navigationTitle(viewModel.coin.name)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                navigationBarTrailingItems
+            }
+        }
     }
 }
 
@@ -66,7 +71,7 @@ struct DetailView: View {
 
 extension DetailView {
     
-    var overviewTitle: some View {
+    private var overviewTitle: some View {
         Text("Overview")
             .font(.title)
             .bold()
@@ -74,7 +79,7 @@ extension DetailView {
             .frame(maxWidth: .infinity, alignment: .leading)
     }
     
-    var aditionalTitle: some View {
+    private var aditionalTitle: some View {
         Text("Overview")
             .font(.title)
             .bold()
@@ -82,7 +87,7 @@ extension DetailView {
             .frame(maxWidth: .infinity, alignment: .leading)
     }
     
-    var overviewGrid: some View {
+    private var overviewGrid: some View {
         LazyVGrid(
             columns: columns,
             alignment: .leading,
@@ -94,7 +99,7 @@ extension DetailView {
             }
     }
     
-    var additionalGrid: some View {
+    private var additionalGrid: some View {
         LazyVGrid(
             columns: columns,
             alignment: .leading,
@@ -104,5 +109,18 @@ extension DetailView {
                     StatisticView(statistic: statistic)
                 }
             }
+    }
+    
+    private var navigationBarTrailingItems: some View {
+        HStack {
+            
+            Text(viewModel.coin.symbol.uppercased())
+                .font(.headline)
+                .foregroundStyle(Color.theme.secondaryText)
+            
+            CoinImageView(coin: viewModel.coin)
+                .frame(width: 25, height: 25)
+            
+        }
     }
 }
