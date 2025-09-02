@@ -35,23 +35,27 @@ struct DetailView: View {
     
     var body: some View {
         ScrollView {
-            VStack(spacing: 20) {
-                Text("")
-                    .frame(height: 150)
+            VStack {
+                ChartView(coin: viewModel.coin)
+                    .padding(.vertical)
                 
-                overviewTitle
-                
-                Divider()
-                
-                overviewGrid
-                
-                aditionalTitle
-                
-                Divider()
+                VStack(spacing: 20) {
+                    
+                    overviewTitle
+                    
+                    Divider()
+                    
+                    overviewGrid
+                    
+                    aditionalTitle
+                    
+                    Divider()
 
-                additionalGrid
+                    additionalGrid
+                }
+                .padding()
+
             }
-            .padding()
         }
         .navigationTitle(viewModel.coin.name)
         .toolbar {
@@ -80,7 +84,7 @@ extension DetailView {
     }
     
     private var aditionalTitle: some View {
-        Text("Overview")
+        Text("Additional Details")
             .font(.title)
             .bold()
             .foregroundStyle(Color.theme.accent)
